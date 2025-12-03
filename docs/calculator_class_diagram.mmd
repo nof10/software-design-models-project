@@ -1,0 +1,109 @@
+%% Mermaid class diagram for calculator-java-swing
+classDiagram
+    %% Interfaces
+    class Operation {
+        <<interface>>
+        +float execute(float operand1, float operand2)
+    }
+
+    %% Concrete operations implement Operation
+    class Add {
+        +float execute(float operand1, float operand2)
+    }
+    class Subtract {
+        +float execute(float operand1, float operand2)
+    }
+    class Multiply {
+        +float execute(float operand1, float operand2)
+    }
+    class Divide {
+        +float execute(float operand1, float operand2)
+    }
+
+    %% Factory
+    class OperationFactory {
+        -OperationFactory()
+        +static Operation createOperation(String symbol)
+    }
+
+    %% Decorator base
+    class OperationDecorator {
+        #Operation wrapped
+        +OperationDecorator(Operation wrapped)
+        +float execute(float operand1, float operand2)
+    }
+
+    %% Concrete decorators
+    class LoggingOperationDecorator {
+        +LoggingOperationDecorator(Operation wrapped)
+        +float execute(float operand1, float operand2)
+    }
+    class RoundingOperationDecorator {
+        -int decimals
+        +RoundingOperationDecorator(Operation wrapped, int decimals)
+        +float execute(float operand1, float operand2)
+    }
+    
+
+    %% Engine (singleton)
+    class CalculatorEngine {
+        -static CalculatorEngine instance
+        -ListString history
+        -CalculatorEngine()
+        +static synchronized CalculatorEngine getInstance()
+        +float evaluate(Operation operation, float op1, float op2)
+        +ListString getHistory()
+        ~synchronized void addHistoryRecord(String record)
+        +synchronized void clearHistory()
+        +synchronized void printHistory()
+        -String symbolOf(Operation operation)
+    }
+
+    %% Facade
+    class CalculatorFacade {
+        -CalculatorEngine engine
+        +CalculatorFacade()
+        +float calculate(String symbol, float op1, float op2)
+        +float calculateWithLogging(String symbol, float op1, float op2)
+        +float calculate(String symbol, float op1, float op2, boolean logging, boolean rounding, int decimals)
+        +ListString getHistory()
+        +void printHistory()
+        +void clearHistory()
+    }
+
+    %% GUI
+    class Calculator {
+        -String currentOperand
+        -String previousOperand
+        -String operation
+        -CalculatorEngine engine
+        -CalculatorFacade facade
+        -boolean loggingEnabled
+        -boolean roundingEnabled
+        -int roundingDecimals
+        +Calculator()
+        +void addEvents()
+        +void clear()
+        +void appendNumber(String number)
+        +void chooseOperation(String operation)
+        +void compute()
+        +void updateDisplay()
+        -void showHistoryDialog()
+    }
+
+    %% Relationships / inheritance
+    Operation <|.. Add
+    Operation <|.. Subtract
+    Operation <|.. Multiply
+    Operation <|.. Divide
+
+    Operation <|.. OperationDecorator
+    OperationDecorator <|-- LoggingOperationDecorator
+    OperationDecorator <|-- RoundingOperationDecorator
+
+    %% Uses / associations
+    OperationFactory ..> Operation : creates
+    CalculatorFacade ..> CalculatorEngine : uses
+    CalculatorFacade ..> OperationFactory : requests Operation
+    Calculator ..> CalculatorFacade : uses
+    

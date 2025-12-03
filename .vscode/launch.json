@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Attach",
+      "request": "attach",
+      "hostName": "localhost",
+      "port": "5005"
+    },
+    {
+      "type": "java",
+      "name": "Debug Calc App",
+      "request": "launch",
+      "mainClass": "Calc.App",
+      "classPaths": ["bin", "AbsoluteLayout.jar"]
+    }
+  ]
+}
